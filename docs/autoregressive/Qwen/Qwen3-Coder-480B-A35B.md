@@ -13,7 +13,7 @@ Model specifications:
 - **Parameters**: 480B total parameters with 35B activated per token.
 - **MoE Architecture**: 160 experts with 8 experts activated per token.
 - **Context Length**: Supports up to 262K tokens.
-- **ROCm Support**: Compatible with AMD MI300X GPUs via SGLang (verified).
+- **ROCm Support**: Compatible with AMD MI300X, MI325X and MI355X GPUs via SGLang (verified).
 
 For more details, please refer to the [official Qwen3-Coder model page](https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct).
 
@@ -25,11 +25,11 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 
 ## 3. Model Deployment
 
-This section provides deployment configurations verified on AMD MI300X hardware platform.
+This section provides deployment configurations verified on AMD MI300X, MI325X and MI355X hardware platforms.
 
 ### 3.1 Basic Configuration
 
-The Qwen3-Coder-480B-A35B model requires 8 GPUs for deployment. The following configurations have been verified on AMD MI300X GPUs.
+The Qwen3-Coder-480B-A35B model requires 8 GPUs for deployment. The following configurations have been verified on AMD MI300X, MI325X and MI355X GPUs.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform and quantization method.
 
@@ -39,7 +39,7 @@ import Qwen3CoderConfigGenerator from '@site/src/components/autoregressive/Qwen3
 
 ### 3.2 Configuration Tips
 
-* **Memory Management**: We have verified successful deployment with `--context-length 8192`. Larger context lengths may be supported but require additional memory.
+* **Memory Management**: We have verified successful deployment on MI300X/MI325X/MI355X with `--context-length 8192`. Larger context lengths may be supported but require additional memory.
 * **Expert Parallelism**: For FP8 quantization, `--ep 2` is required.
 * **Page Size**: `--page-size 32` is recommended for MoE models to optimize memory usage.
 * **Environment Variable**: If you encounter aiter-related issues, try setting `SGLANG_USE_AITER=0`.
@@ -85,6 +85,11 @@ print(response.choices[0].message.content)
 
 **Example Output:**
 
+```text
+Response costs: 8.85s
+Generated text:
+```
+
 ```python
 from typing import List, Optional
 
@@ -93,7 +98,7 @@ def binary_search(arr: List[int], target: int) -> Optional[int]:
     Performs binary search on a sorted list to find the index of a target value.
 
     Args:
-        arr (List[int]): A sorted list of integers to search through.
+        arr (List[int]): A sorted list of integers to search in.
         target (int): The integer value to search for.
 
     Returns:
@@ -107,6 +112,8 @@ def binary_search(arr: List[int], target: int) -> Optional[int]:
         2
         >>> binary_search([1, 2, 3, 4, 5], 6)
         None
+        >>> binary_search([], 1)
+        None
     """
     if not arr:
         return None
@@ -115,7 +122,7 @@ def binary_search(arr: List[int], target: int) -> Optional[int]:
     right: int = len(arr) - 1
 
     while left <= right:
-        mid: int = left + (right - left) // 2
+        mid: int = (left + right) // 2
 
         if arr[mid] == target:
             return mid
@@ -127,7 +134,4 @@ def binary_search(arr: List[int], target: int) -> Optional[int]:
     return None
 ```
 
-## Reference
-
-- [Qwen3](./Qwen3)
-- [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md)
+**Note:** The model also provides a recursive implementation and additional explanations. The output above shows the main iterative implementation for brevity.
