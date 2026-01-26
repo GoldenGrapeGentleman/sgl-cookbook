@@ -53,7 +53,7 @@ const Qwen3CoderConfigGenerator = () => {
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
       const modelName = `Qwen/Qwen3-Coder-${config.baseName}-Instruct${quantSuffix}`;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
+      let cmd = 'SGLANG_USE_AITER=0 python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
 
       // TP is always 8 for this model
@@ -66,7 +66,7 @@ const Qwen3CoderConfigGenerator = () => {
         cmd += ` \\\n  --ep 2`;
       }
 
-      // Context length verified on MI300X/MI355X
+      // Context length verified on MI300X/MI325X/MI355X
       cmd += ` \\\n  --context-length 8192`;
 
       // Page size for MoE models
